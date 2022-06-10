@@ -1,5 +1,6 @@
-from django.views import View
 from django.http import JsonResponse
+from django.views import View
+
 
 # Function based view
 def show_message_success(request):
@@ -11,4 +12,4 @@ def show_message_success(request):
     if request.method == 'GET':
         return JsonResponse(data, status=200)
     else:
-        return JsonResponse(message='error', status=400)
+        return JsonResponse({'message': 'delete method!!'}, status=400)
