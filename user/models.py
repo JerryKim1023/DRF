@@ -10,6 +10,7 @@ class User(models.Model):
     password = models.CharField("비밀번호", max_length=60)
     fullname = models.CharField("이름", max_length=20)
     join_date = models.DateTimeField("가입일", auto_now_add=True)
+    permission_rank = models.IntegerField(default=0)
     
     # 사용자계정으로 email을 사용, 추후 넷플릭스처럼 이메일 or 핸드폰 로그인 추가예정
     # objects = UserManager() 
