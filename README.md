@@ -1,5 +1,16 @@
 # DRF
 DRF study and try!
+### ai
+ - AI
+    - 프로젝트 
+ - api
+    - DRF 공식문서 보고 연습해 봄. / rest_framework의 decorators 활용해서 api_view GET,POST,DELETE 통신 및 serializer 간단하게 사용
+ - blog
+    - 카테고리, 게시물 기능 구현 
+ - user
+    - user에 관한 앱으로 auth기능을 담아 user를 커스텀하였음. / serializer 활용하여 추가 기능구현 계획 중
+
+
 
 ## 6월10일 / *참고* 아래 과제는 CBV 기반으로 수행
 
