@@ -14,6 +14,10 @@ from django.db.models import F
 
 from datetime import datetime
 class UserApiView(APIView):
+
+    def get(self, request):
+        return
+
     # 회원가입 / serializer로 쉽고 직관적으로 구현가능하다해서 우선 스킵
     def get_signup(self, request):
         # username = request.data.get('username', '')

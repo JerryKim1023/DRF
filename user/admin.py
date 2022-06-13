@@ -10,10 +10,13 @@ from user.models import Hobby as HobbyModel
 #unregister group model
 admin.site.unregister(Group)
 
+class UserAdmin(admin.ModelAdmin):
+    search_fields: ('fullname')
+
 class HobbyAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
 
 # admin.py
-admin.site.register(UserModel)
+admin.site.register(UserModel, UserAdmin)
 admin.site.register(UserProfileModel)
 admin.site.register(HobbyModel, HobbyAdmin)
