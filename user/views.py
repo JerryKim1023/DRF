@@ -6,13 +6,29 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework import status
+from blog.models import Article
 
 from user.models import Hobby, User
 from django.contrib.auth import authenticate, login
 from django.db.models import F
+
+from datetime import datetime
 class UserApiView(APIView):
+    # 회원가입 / serializer로 쉽고 직관적으로 구현가능하다해서 우선 스킵
+    def get_signup(self, request):
+        # username = request.data.get('username', '')
+        # password = request.data.get('password', '')
+
+        # user = authenticate(request, username=username, password=password)
+        # if not user:
+        #     return Response({"error": "존재하지 않는 계정이거나 패스워드가 일치하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # login(request, user)
+        return Response({"message": "로그인 성공!!"}, status=status.HTTP_200_OK)
+    
+    
     # 로그인
-    def post(self, request):
+    def post_login(self, request):
         username = request.data.get('username', '')
         password = request.data.get('password', '')
 
@@ -35,6 +51,34 @@ class MyGoodPermission(permissions.BasePermission):
         user = request.user
         result = bool(user and user.is_authenticated and user.permission_rank >= 5)
         return 
+
+    def signup_three_days_permission(self, request, view):
+
+        # 현재 시간을 가져온다.
+        now = datetime.now()
+        print(now)
+
+        # 비교할 과거 시점에 대한 정보
+        signup_date = request.user.join_date
+        print(signup_date)
+
+        user = request.user
+        result = bool(user and user.is_authenticated and (now-signup_date).days >= 3)
+        return 
+
+    def signup_three_minutes_permission(self, request, view):
+
+        # 현재 시간을 가져온다.
+        now = datetime.now()
+        print(now)
+
+        # 비교할 과거 시점에 대한 정보
+        signup_date = request.user.join_date
+        print(signup_date)
+
+        user = request.user
+        result = bool(user and user.is_authenticated and (now-signup_date).minutes >= 3)
+        return
 
 class UserView(APIView): # CBV 방식
     # permission_classes = [MyGoodPermission]
@@ -86,19 +130,23 @@ hobby : 여행 / hobby members : ['user2']
     #     return Response({'message': 'delete method!!'})
 
 
-class ListUsers(APIView):
+class ListUsers(APIView): # 유저리스트에 대한 API
 
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
 
     # def get(self, request):  # 리소스 조회, 세부 정보 열람
     #     return Response({'message': f'{usernames} 님의 조회가 완료되었습니다.'})
-    def get_list_users(self, request, format=None): #  format=None과, urls의 format_suffix_patterns
-        # 모든 사용자 리스트 반환
-        usernames = [user.username for user in User.objects.all()]
-        return Response(usernames)
-
-
-        
+    def get_login_list_users(self, request, format=None): #  format=None과, urls의 format_suffix_patterns
+        # 모든 로그인한 사용자 리스트 반환
+        users = User.objects.all()
+        try:
+            User.objects.filter(user=users)
+            if users.is_authenticated:
+                login_users = [user for user in users]
+                print(login_users)
+            return Response(login_users)
+        except:
+            return Response(f"{login_users.username}님 로그인 후에 조회가 가능합니다.")
 
     
     def post(self, request): # 리소스 생성
