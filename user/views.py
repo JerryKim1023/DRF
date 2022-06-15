@@ -22,6 +22,10 @@ class UserApiView(APIView):
     permission_classes = [permissions.AllowAny]
     def get(self, request):
         user = request.user
+        # user = User.objects.all()
+        print('@@@@@@@@@@@@@@@@@')
+        print(type(user))
+        print('@@@@@@@@@@@@@@@@@')
         # serializer에 queryset을 인자로 줄 경우 many=True 옵션을 사용해야 한다.
         serialized_user_data = UserSerializer(user).data
         return Response(serialized_user_data, status=status.HTTP_200_OK)

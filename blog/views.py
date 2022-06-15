@@ -23,12 +23,15 @@ class ArticleApiView(APIView):
         user = request.user
         user_number2 = User.objects.get(id=2)
         user_article = Article.objects.filter(user=user_number2)
+        print('@@@@@@@@@@@@@@@@@')
+        print(type(user_number2)) # 오브젝트
+        print(type(user_article)) # 쿼리셋
+        print('@@@@@@@@@@@@@@@@@')
         
         # serializer에 queryset을 인자로 줄 경우 many=True 옵션을 사용해야 한다.
-        serialized_article_data = AticleSerializer(user_article).data
-        serialized_user_data = UserSerializer(user).data
-        serialized_user_data.union(serialized_article_data)
-        return Response(serialized_user_data, many=True, status=status.HTTP_200_OK)
+        serialized_article_data = AticleSerializer(user_article, many=True).data
+        serialized_user_data = UserSerializer(user_number2).data
+        return Response(serialized_user_data, serialized_article_data, status=status.HTTP_200_OK)
 
         # return data
         """
