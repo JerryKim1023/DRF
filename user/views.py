@@ -6,28 +6,51 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework import status
+from rest_framework.exceptions import APIException
 from blog.models import Article
 
 from user.models import Hobby, User
 from django.contrib.auth import authenticate, login
 from django.db.models import F
 
-from datetime import datetime
-class UserApiView(APIView):
+from datetime import datetime, timedelta, timezone
 
+from user.serializers import UserSerializer
+class UserApiView(APIView):
+    #모든 사용자에 대해서 user 정보와 userpofile 정보를 가져오고
+    # 같은 취미를 가진 사람들을 출력하기
+    permission_classes = [permissions.AllowAny]
     def get(self, request):
-        return
+        user = request.user
+        # serializer에 queryset을 인자로 줄 경우 many=True 옵션을 사용해야 한다.
+        serialized_user_data = UserSerializer(user).data
+        return Response(serialized_user_data, status=status.HTTP_200_OK)
+
+        # return data
+        """
+        {
+            "username": "user",
+            "password": "pbkdf2_sha256$320000$u5YnmKo9luab9csqWpzRsa$pKfqHnBiF5Rgdo1Mj9nxNOdhpAl9AhPVXFPXkbPz7Mg=",
+            "fullname": "user's name",
+            "email": "user@email.com"
+        }
+        """
 
     # 회원가입 / serializer로 쉽고 직관적으로 구현가능하다해서 우선 스킵
     def get_signup(self, request):
-        # username = request.data.get('username', '')
-        # password = request.data.get('password', '')
+        username = request.data.get('username', '')
+        email = request.data.get('email', '')
+        phone_number = request.data.get('phone_number', '')
+        fullname = request.data.get('fullname', '')
+        password = request.data.get('password', '') 
+        join_date = request.data.get('join_date', '')
+        gender = request.data.get('gender', '')
 
-        # user = authenticate(request, username=username, password=password)
-        # if not user:
-        #     return Response({"error": "존재하지 않는 계정이거나 패스워드가 일치하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        user = authenticate(request, username=username, password=password)
+        if not user:
+            return Response({"error": "존재하지 않는 계정이거나 패스워드가 일치하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # login(request, user)
+        login(request, user)
         return Response({"message": "로그인 성공!!"}, status=status.HTTP_200_OK)
     
     
@@ -56,6 +79,46 @@ class MyGoodPermission(permissions.BasePermission):
         result = bool(user and user.is_authenticated and user.permission_rank >= 5)
         return 
 
+class RegistedMoreThanAWeekUser(permissions.BasePermission):
+    """
+    가입일 기준 1주일 이상 지난 사용자만 접근 가능
+    """
+    message = '가입 후 1주일 이상 지난 사용자만 사용하실 수 있습니다.'
+    
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.join_date < (timezone.now() - timedelta(days=7)))
+
+
+class GenericAPIException(APIException):
+    def __init__(self, status_code=None, detail=None, code=None):
+        self.status_code=status_code
+        super().__init__(detail=detail, code=code)
+
+class IsAdminOrIsAuthenticatedReadOnly(permissions.BasePermission):
+    """
+    admin 사용자는 모두 가능, 로그인 사용자는 조회만 가능
+    """
+    SAFE_METHODS = ('GET', )
+    message = '접근 권한이 없습니다.'
+
+    def has_permission(self, request, view):
+        user = request.user
+
+        if not user.is_authenticated:
+            response ={
+                    "detail": "서비스를 이용하기 위해 로그인 해주세요.",
+                }
+            raise GenericAPIException(status_code=status.HTTP_401_UNAUTHORIZED, detail=response)
+
+        if user.is_authenticated and user.is_admin:
+            return True
+            
+        elif user.is_authenticated and request.method in self.SAFE_METHODS:
+            return True
+        
+        return False
+
+class RegistedMoreThanThreeDaysUser(permissions.BasePermission):
     def signup_three_days_permission(self, request, view):
 
         # 현재 시간을 가져온다.
@@ -93,10 +156,11 @@ class UserView(APIView): # CBV 방식
     def get_same_hobby(self, request):
         user = request.user
         # user = User.objects.get(id=1)
-        # print(user)
-
+        print(user)
+        print(dir(user))
 
         hobbys = user.userprofile.hobby.all()
+        print(dir(hobby))
         for hobby in hobbys:
             # exclde : 매칭 된 쿼리만 제외, filter와 반대
 		    # annotate : 필드 이름을 변경해주기 위해 사용, 이외에도 원하는 필드를 추가하는 등 다양하게 활용 가능

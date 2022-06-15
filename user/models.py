@@ -84,7 +84,7 @@ class User(AbstractBaseUser):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(to=User, verbose_name="사용자", on_delete=models.CASCADE, primary_key=True)
-    hobby = models.ManyToManyField(to="Hobby", verbose_name="취미", through='UserProfileHobby')
+    hobby = models.ManyToManyField(to="Hobby", verbose_name="취미") # , through='UserProfileHobby'
     introduction = models.TextField("소개")
     birthday = models.DateField("생일")
     age = models.IntegerField("나이")
@@ -97,6 +97,6 @@ class Hobby(models.Model):
     def __str__(self):
         return self.name
 
-class UserProfileHobby(models.Model):
-    userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE) # UserProfile 처럼 클래스 직접지정 or 스트링으로 테이블지정
-    Hobby = models.ForeignKey(Hobby, on_delete=models.CASCADE)
+# class UserProfileHobby(models.Model):
+#     userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE) # UserProfile 처럼 클래스 직접지정 or 스트링으로 테이블지정
+#     Hobby = models.ForeignKey(Hobby, on_delete=models.CASCADE)
