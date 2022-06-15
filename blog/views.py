@@ -7,9 +7,38 @@ from rest_framework import permissions
 from rest_framework import status
 
 from blog.models import Article
+from blog.serializers import AticleSerializer
 from blog.services import create_article
+from user.models import User
+from user.serializers import UserSerializer
 
 # Create your views here.
+
+
+class ArticleApiView(APIView):
+    #모든 사용자에 대해서 user 정보와 userpofile 정보를 가져오고
+    # 같은 취미를 가진 사람들을 출력하기
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        user = request.user
+        user_number2 = User.objects.get(id=2)
+        user_article = Article.objects.filter(user=user_number2)
+        
+        # serializer에 queryset을 인자로 줄 경우 many=True 옵션을 사용해야 한다.
+        serialized_article_data = AticleSerializer(user_article).data
+        serialized_user_data = UserSerializer(user).data
+        serialized_user_data.append(serialized_article_data)
+        return Response(serialized_user_data, status=status.HTTP_200_OK)
+
+        # return data
+        """
+        {
+            "username": "user",
+            "password": "pbkdf2_sha256$320000$u5YnmKo9luab9csqWpzRsa$pKfqHnBiF5Rgdo1Mj9nxNOdhpAl9AhPVXFPXkbPz7Mg=",
+            "fullname": "user's name",
+            "email": "user@email.com"
+        }
+        """
 
 class ArticleView(View):
     # def get(self, request, pk): #ListUser 쪽 거 옮겨와서 다시 만들기
