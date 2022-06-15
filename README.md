@@ -6,11 +6,16 @@ DRF study and try!
  - api(app)
     - DRF 공식문서 보고 연습해 봄. / rest_framework의 decorators 활용해서 api_view GET,POST,DELETE 통신 및 serializer 간단하게 사용
  - blog(app)
-    - 카테고리, 게시물 기능 구현 
+    - 카테고리, 게시물, 코멘트 기능 구현 
  - user(app)
     - user에 관한 앱으로 auth기능을 담아 user를 커스텀하였음. / serializer 활용하여 추가 기능구현 계획 중
 
+## 6/13 과제
 
+1. blog 앱에 <게시글, 작성자, 작성 시간, 내용>이 포함된 comment라는 테이블을 추가해주세요
+    1. 게시글과 작성자는 fk 필드로 생성해주셔야 해요
+2. Django Serializer 기능을 사용해 로그인 한 사용자의 기본 정보들을 response data에 넣어서 return 해주세요
+3. 사용자가 작성 한 게시글을 로그인 한 (2번)User의 serializer data에 포함시켜서 같이 return해주세요
 
 ## 6월10일 / *참고* 아래 과제는 CBV 기반으로 수행
 
