@@ -27,8 +27,8 @@ class ArticleApiView(APIView):
         # serializer에 queryset을 인자로 줄 경우 many=True 옵션을 사용해야 한다.
         serialized_article_data = AticleSerializer(user_article).data
         serialized_user_data = UserSerializer(user).data
-        serialized_user_data.append(serialized_article_data)
-        return Response(serialized_user_data, status=status.HTTP_200_OK)
+        serialized_user_data.union(serialized_article_data)
+        return Response(serialized_user_data, many=True, status=status.HTTP_200_OK)
 
         # return data
         """
