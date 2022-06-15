@@ -1,6 +1,6 @@
 # DRF
 DRF study and try!
-### ai
+### ai / (각 앱이 어떤 역할을 하는지, 그 안에는 뭐가 있는지)
  - AI
     - 프로젝트 이름 및 settings.py가 있는 핵심 패키지폴더
  - api(app)
@@ -8,14 +8,19 @@ DRF study and try!
  - blog(app)
     - 카테고리, 게시물, 코멘트 기능 구현 
  - user(app)
-    - user에 관한 앱으로 auth기능을 담아 user를 커스텀하였음. / serializer 활용하여 추가 기능구현 계획 중
+    - user에 관한 앱으로 auth기능을 담아 user를 커스텀하였음.
+    - rest_framework.exceptions의 APIException을 활용해서 로그인하지 않은 사용자에 대한 제재를 추가함.(로그인 한 유저,관리자만 권한을 return True를 반환하게함)
+    -  / serializer 활용하여 추가 기능구현 계획 중
 
 ## 6/13 과제
 
 1. blog 앱에 <게시글, 작성자, 작성 시간, 내용>이 포함된 comment라는 테이블을 추가해주세요
     1. 게시글과 작성자는 fk 필드로 생성해주셔야 해요
+   -> blog 앱의 models.py에 추가
 2. Django Serializer 기능을 사용해 로그인 한 사용자의 기본 정보들을 response data에 넣어서 return 해주세요
+   -> user 앱의 views.py에 class UserApiView(APIView)
 3. 사용자가 작성 한 게시글을 로그인 한 (2번)User의 serializer data에 포함시켜서 같이 return해주세요
+   -> blog 앱의 views.py에 class ArticleApiView(APIView)
 
 ## 6월10일 / *참고* 아래 과제는 CBV 기반으로 수행
 
@@ -41,12 +46,12 @@ DRF study and try!
     - 로그인 기능 구현이 처음이시라면 3일차 강의자료 5번 항목을 확인해주세요<br>
 -->> 로그인 기능에 임시로 class view에 signup도 껴놓음. / login은 post로 받고 sign up은 get 요청으로 받고 싶은데 APIView에서 어떻게 구분??
 11. views.py에 로그인 한 사용자의 정보, 게시글을 보여주는 기능을 만들어주세요<br>
--->> ListUsers class에 로그인한 사용자만 조회하는 함수 생성 / user쪽에다 만들었는데 blog 쪽으로 수정해야함.
+-->> class UserApiView(APIView) 에 get 함수로 구현해놓음
 12. views.py에 <글 제목, 카테고리, 글 내용>을 입력받아 게시글을 작성해주는 기능을 만들어주세요
     - 게시글은 계정 생성 후 3일 이상 지난 사용자만 생성할 수 있도록 권한을 설정해주세요
     - 테스트 코드에서는 계정 생성 후 3분 이상 지난 사용자는 게시글을 작성할 수 있도록 해주세요
 <br>
--->> 처음부터 못 하겠어서 보고서 붙여넣고 따라하면서 만든거라... 다시 복습을 열심히 하겠습니다.
+-->> blog views.py 에서 permission classes 생성
 
 ## 6월8일
 1. OneToOneField는 unique함을 가진다. CASCADE / ManyToManyField의 활용
