@@ -5,18 +5,40 @@ from user.models import User as UserModel
 from user.models import UserProfile as UserProfileModel
 from user.models import Hobby as HobbyModel
 
-# Register your models here.
-
 #unregister group model
 admin.site.unregister(Group)
 
-class UserAdmin(admin.ModelAdmin):
-    search_fields: ('fullname')
+# Register your models here.
+# class UserProfileInline(admin.TabularInline): # 가로로 뿌려줌
+class UserProfileInline(admin.StackedInline): # 세로로 뿌려줌
+    model = UserProfileModel
 
+    # def formfield_for_manytomany(self, db_field, request, **kwargs): # 내가 원하는 필드에서 보여주고 싶은 것만 보여주게 예외처리하기 / 폼필드 설정
+    #     if db_field.name == 'hobby':
+    #         kwargs['queryset'] = HobbyModel.objects.filter(id__lte=7)
+
+    #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('id', 'username', 'fullname')
+    list_display_links = ('id', 'username', )
+    list_filter = ('fullname', )
+    search_fields = ('username', )
+    readonly_fields = ('username', 'join_date', )
+
+    fieldsets = (
+        ("info", {'fields': ('username', 'fullname', 'join_date')}),
+        ('permissions', {'fields': ('is_admin', 'is_active', )}),
+    )
+
+    inlines = (
+            UserProfileInline,
+        )
 class HobbyAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
 
 # admin.py
 admin.site.register(UserModel, UserAdmin)
-admin.site.register(UserProfileModel)
+# admin.site.register(UserProfileModel)
 admin.site.register(HobbyModel, HobbyAdmin)
