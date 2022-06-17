@@ -17,12 +17,13 @@ from datetime import datetime, timedelta, timezone
 
 from user.serializers import UserSerializer
 class UserApiView(APIView):
+    
     #모든 사용자에 대해서 user 정보와 userpofile 정보를 가져오고
     # 같은 취미를 가진 사람들을 출력하기
     permission_classes = [permissions.AllowAny]
     def get(self, request):
-        user = request.user
-        # user = User.objects.all()
+        # user = request.user
+        user = User.objects.all().order_by('?').first()
         print('@@@@@@@@@@@@@@@@@')
         print(type(user))
         print('@@@@@@@@@@@@@@@@@')
