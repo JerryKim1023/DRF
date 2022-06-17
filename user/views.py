@@ -28,7 +28,7 @@ class UserApiView(APIView):
         print(type(user))
         print('@@@@@@@@@@@@@@@@@')
         # serializer에 queryset을 인자로 줄 경우 many=True 옵션을 사용해야 한다.
-        serialized_user_data = UserSerializer(user).data
+        serialized_user_data = UserSerializer(user).data # 오브젝트를 넣어서 직렬화해주기
         return Response(serialized_user_data, status=status.HTTP_200_OK)
 
         # return data
@@ -42,34 +42,35 @@ class UserApiView(APIView):
         """
 
     # 회원가입 / serializer로 쉽고 직관적으로 구현가능하다해서 우선 스킵
-    def get_signup(self, request):
-        username = request.data.get('username', '')
-        email = request.data.get('email', '')
-        phone_number = request.data.get('phone_number', '')
-        fullname = request.data.get('fullname', '')
-        password = request.data.get('password', '') 
-        join_date = request.data.get('join_date', '')
-        gender = request.data.get('gender', '')
+    def post(self, request):
+        '''
+        사용자 정보를 입력받아 create 하는 함수
+        '''
+        user_serializer = UserSerializer(data=request.data)
+        user_serializer.is_valid(raise_exception=True)
+        user_serializer.save() # 정상
+        return Response(user_serializer.data, status=status.HTTP_200_OK)
+        
+        # is_valid 함수에서 raise_exeption=True를 주면 위처럼 코드 간소화 가능
+        # if user_serializer.is_valid(): 
+        #     user_serializer.save() # 정상
+        #     return Response(user_serializer.data, status=status.HTTP_200_OK)
 
-        user = authenticate(request, username=username, password=password)
-        if not user:
-            return Response({"error": "존재하지 않는 계정이거나 패스워드가 일치하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+        # return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      
 
-        login(request, user)
-        return Response({"message": "로그인 성공!!"}, status=status.HTTP_200_OK)
     
-    
-    # 로그인
-    def post_login(self, request):
-        username = request.data.get('username', '')
-        password = request.data.get('password', '')
+    # # 로그인
+    # def post_login(self, request):
+    #     username = request.data.get('username', '')
+    #     password = request.data.get('password', '')
 
-        user = authenticate(request, username=username, password=password)
-        if not user:
-            return Response({"error": "존재하지 않는 계정이거나 패스워드가 일치하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+    #     user = authenticate(request, username=username, password=password)
+    #     if not user:
+    #         return Response({"error": "존재하지 않는 계정이거나 패스워드가 일치하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        login(request, user)
-        return Response({"message": "로그인 성공!!"}, status=status.HTTP_200_OK)
+    #     login(request, user)
+    #     return Response({"message": "로그인 성공!!"}, status=status.HTTP_200_OK)
 
 class MyGoodPermission(permissions.BasePermission):
     """
@@ -122,42 +123,13 @@ class IsAdminOrIsAuthenticatedReadOnly(permissions.BasePermission):
             return True
         
         return False
-
-class RegistedMoreThanThreeDaysUser(permissions.BasePermission):
-    def signup_three_days_permission(self, request, view):
-
-        # 현재 시간을 가져온다.
-        now = datetime.now()
-        print(now)
-
-        # 비교할 과거 시점에 대한 정보
-        signup_date = request.user.join_date
-        print(signup_date)
-
-        user = request.user
-        result = bool(user and user.is_authenticated and (now-signup_date).days >= 3)
-        return 
-
-    def signup_three_minutes_permission(self, request, view):
-
-        # 현재 시간을 가져온다.
-        now = datetime.now()
-        print(now)
-
-        # 비교할 과거 시점에 대한 정보
-        signup_date = request.user.join_date
-        print(signup_date)
-
-        user = request.user
-        result = bool(user and user.is_authenticated and (now-signup_date).minutes >= 3)
-        return
-
 class UserView(APIView): # CBV 방식
     # permission_classes = [MyGoodPermission]
     permission_classes = [permissions.AllowAny] # 누구나 view 조회 가능
     # permission_classes = [permissions.IsAdminUser] # admin만 view 조회 가능
     # permission_classes = [permissions.IsAuthenticated] # 로그인 된 사용자만 view 조회 가능
 
+    
     def get_same_hobby(self, request):
         user = request.user
         # user = User.objects.get(id=1)
