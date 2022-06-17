@@ -22,5 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.show_message_success),
     path('user/', include("user.urls")),
+    path('blog/', include("blog.urls")),
     path('api/', include("api.urls")),
 ]
