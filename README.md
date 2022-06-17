@@ -11,7 +11,16 @@ DRF study and try!
     - user에 관한 앱으로 auth기능을 담아 user를 커스텀하였음.
     - rest_framework.exceptions의 APIException을 활용해서 로그인하지 않은 사용자에 대한 제재를 추가함.(로그인 한 유저,관리자만 권한을 return True를 반환하게함)
     -  / serializer 활용하여 추가 기능구현 계획 중
+    -  
+## 6/15 과제
 
+1. product라는 앱을 새로 생성해주세요
+2. product 앱에서 <제목, 썸네일, 설명, 등록일자, 노출 시작 일, 노출 종료일, 활성화 여부>가 포함된 event 테이블을 생성해주세요
+3. django serializer에서 기본적으로 제공하는 validate / create / update 기능을 사용해 event 테이블의 생성/수정 기능을 구현해주세요
+    1. 전달 받은 데이터는 **kwargs를 사용해 입력해주세요
+    2. postman으로 파일을 업로드 할 때는 raw 대신 form-data를 사용하고, Key type을 File로 설정해주세요
+4. 등록된 이벤트 중 현재 시간이 노출 시작 일과 노출 종료 일의 사이에 있고, 활성화 여부가 True인 event 쿼리셋을 직렬화 해서 리턴해주는 serializer를 만들어주세요
+5. 
 ## 6/13 과제
 
 1. blog 앱에 <게시글, 작성자, 작성 시간, 내용>이 포함된 comment라는 테이블을 추가해주세요
