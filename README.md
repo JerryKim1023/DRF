@@ -7,6 +7,8 @@ DRF study and try!
     - DRF 공식문서 보고 연습해 봄. / rest_framework의 decorators 활용해서 api_view GET,POST,DELETE 통신 및 serializer 간단하게 사용
  - blog(app)
     - 카테고리, 게시물, 코멘트 기능 구현 
+ - product(app)
+    - event(상품) 
  - user(app)
     - user에 관한 앱으로 auth기능을 담아 user를 커스텀하였음.
     - rest_framework.exceptions의 APIException을 활용해서 로그인하지 않은 사용자에 대한 제재를 추가함.(로그인 한 유저,관리자만 권한을 return True를 반환하게함)
@@ -15,25 +17,41 @@ DRF study and try!
 ## 6/17 과제
 
 1. product 앱에서 <작성자, 썸네일, 상품 설명, 등록일자, 노출 종료 일자, 가격, 수정 일자, 활성화 여부>가 포함된 product 테이블을 생성해주세요
+-> product.models.py
 2. django serializer를 사용해 validate / create / update 하는 기능을 구현해주세요
     1. custom validation 기능을 사용해 노출 종료 일자가 현재보다 더 이전 시점이라면 상품을 등록할 수 없도록 해주세요
+    -> eventserializer의 값을 어떻게 담아서 노출종료 일자를 담아야할지 모르겟음.. 계속 빈 쿼리셋값만 담김.
     2. custom creator 기능을 사용해 상품 설명의 마지막에 “<등록 일자>에 등록된 상품입니다.” 라는 문구를 추가해주세요
+    -> 상품설명 커스텀을 잘 모르겟음...
     3. custom update 기능을 사용해 상품이 update 됐을 때 상품 설명의 가장 첫줄에 “<수정 일자>에 수정되었습니다.” 라는 문구를 추가해주세요
+    -> 상품 설명으로 진입을 어떻게 함?? 2번이랑 같은 맥락인데.. 
 3. product 앱에서 <작성자, 상품, 내용, 평점, 작성일>을 담고 있는 review 테이블을 만들어주세요
+-> product = models.ForeignKey("상품", Event, on_delete=models.CASCADE)
+TypeError: __init__() got multiple values for argument 'on_delete' ??
+모델 설정부터.. 잘 모르겠음;;
 4. 현재 날짜를 기준으로, 노출 종료 날짜가 지나지 않았고 활성화 여부가 True이거나 로그인 한 사용자가 등록 한 상품들의 정보를 serializer를 사용해 리턴해주세요
+-> 시리얼라이저를 활용해 리턴?? Q를 view가 아닌 시리얼라이저 어느 위치에 써야함??
 5. 4번 상품 정보를 리턴 할 때 상품에 달린 review와 평균 점수를 함께 리턴해주세요
     1. 평균 점수는 (리뷰 평점의 합/리뷰 갯수)로 구해주세요
+    -> values로 가져오려는데 review모델 생성이 에러떠서 가져오는 게 안 되서 값을 못 찍어봐서... 못하겠음;;
     2. 작성 된 리뷰는 모두 return하는 것이 아닌, 가장 최근 리뷰 1개만 리턴해주세요
+    -> ?? 기본기부터 다시 봐야할듯... 정리가 안됨..
 6. 로그인 하지 않은 사용자는 상품 조회만 가능하고, 회원가입 이후 3일 이상 지난 사용자만 상품을 등록 할 수 있도록 권한을 설정해주세요
+-> permission class 설정
 
 ## 6/15 과제
 
 1. product라는 앱을 새로 생성해주세요
+-> 생성 후 등록완료
 2. product 앱에서 <제목, 썸네일, 설명, 등록일자, 노출 시작 일, 노출 종료일, 활성화 여부>가 포함된 event 테이블을 생성해주세요
+-> models.py에서 생성 완료
 3. django serializer에서 기본적으로 제공하는 validate / create / update 기능을 사용해 event 테이블의 생성/수정 기능을 구현해주세요
     1. 전달 받은 데이터는 **kwargs를 사용해 입력해주세요
+    -> 필요없는 사항이라고 전달 받음. 그래도 **kwargs는 따로 공부하기!
     2. postman으로 파일을 업로드 할 때는 raw 대신 form-data를 사용하고, Key type을 File로 설정해주세요
+    -> 설정 완료
 4. 등록된 이벤트 중 현재 시간이 노출 시작 일과 노출 종료 일의 사이에 있고, 활성화 여부가 True인 event 쿼리셋을 직렬화 해서 리턴해주는 serializer를 만들어주세요
+-> serializer를 만들어주세요 인데 뷰에서 처리하는 게 맞음?? serializer에서 뭔가 처리하란 소리 아니었음??
 
 ## 6/13 과제
 
