@@ -8,7 +8,7 @@ DRF study and try!
  - blog(app)
     - 카테고리, 게시물, 코멘트 기능 구현 
  - product(app)
-    - event(상품) 
+    - event모델을 통해 상품, 리뷰 구현
  - user(app)
     - user에 관한 앱으로 auth기능을 담아 user를 커스텀하였음.
     - rest_framework.exceptions의 APIException을 활용해서 로그인하지 않은 사용자에 대한 제재를 추가함.(로그인 한 유저,관리자만 권한을 return True를 반환하게함)
