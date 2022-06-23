@@ -81,9 +81,17 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
-    def update(self, instance, request):
-        pass
+    def update(self, instance, validated_data):
+        
+        for key, value in validated_data.items():
+            if key == "password":
+                instance.set_password(value)
+                # continue
+            setattr(instance, key, value)
+        instance.save()
 
+        return instance
+    
 
 # sample request data
 '''
