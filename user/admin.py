@@ -22,6 +22,7 @@ class UserProfileInline(admin.StackedInline): # 세로로 뿌려줌
 
     #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+ # UserAdmin 상속받으면 list_display, list_display_links, list_filter, filter_horizontal = [] 들이 필수 값이다.
 class UserAdmin(BaseUserAdmin):
     filter_horizontal = []
     list_display = ('id', 'username', 'fullname')
