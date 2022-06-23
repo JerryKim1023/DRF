@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render
 # views.py
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import permissions
+from rest_framework import permissions, authentication
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from blog.models import Article
@@ -24,9 +24,6 @@ class UserApiView(APIView):
     def get(self, request):
         # user = request.user
         user = User.objects.all().order_by('?').first()
-        print('@@@@@@@@@@@@@@@@@')
-        print(type(user))
-        print('@@@@@@@@@@@@@@@@@')
         # serializer에 queryset을 인자로 줄 경우 many=True 옵션을 사용해야 한다.
         serialized_user_data = UserSerializer(user).data # 오브젝트를 넣어서 직렬화해주기
         return Response(serialized_user_data, status=status.HTTP_200_OK)
@@ -58,19 +55,35 @@ class UserApiView(APIView):
 
         # return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
       
+    # 수정
+    def put(self, request, obj_id):
+        
+        user_update = User.objects.get(id=obj_id)
+        # 오브젝트, data , partial 넘기기
+        user_serializer = UserSerializer(user_update, data=request.data, partial=True)
+        user_serializer.is_valid(raise_exception=True)
+        user_serializer.save() # 정상
+        return Response(user_serializer.data, status=status.HTTP_200_OK)
+        
+        
+        # is_valid 함수에서 raise_exeption=True를 주면 위처럼 코드 간소화 가능
+        # if user_serializer.is_valid(): 
+        #     user_serializer.save() # 정상
+        #     return Response(user_serializer.data, status=status.HTTP_200_OK)
 
-    
-    # # 로그인
-    # def post_login(self, request):
-    #     username = request.data.get('username', '')
-    #     password = request.data.get('password', '')
+        # return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    #     user = authenticate(request, username=username, password=password)
-    #     if not user:
-    #         return Response({"error": "존재하지 않는 계정이거나 패스워드가 일치하지 않습니다."}, status=status.HTTP_401_UNAUTHORIZED)
-
-    #     login(request, user)
-    #     return Response({"message": "로그인 성공!!"}, status=status.HTTP_200_OK)
+    # 삭제
+    def delete(self, request, obj_id):
+        
+        try:
+            user_delete = User.objects.get(obj_id)  
+        except User.DoesNotExist:
+         # some event						   status=400
+            return Response({"message": "오브젝트가 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        user_delete.delete()
+        # 오브젝트, data , partial 넘기기
+        return Response({"message": f"{User.username} 정보가 더 이상 존재하지 않습니다."}, status=status.HTTP_200_OK)
 
 class MyGoodPermission(permissions.BasePermission):
     """
@@ -85,44 +98,7 @@ class MyGoodPermission(permissions.BasePermission):
         result = bool(user and user.is_authenticated and user.permission_rank >= 5)
         return 
 
-class RegistedMoreThanAWeekUser(permissions.BasePermission):
-    """
-    가입일 기준 1주일 이상 지난 사용자만 접근 가능
-    """
-    message = '가입 후 1주일 이상 지난 사용자만 사용하실 수 있습니다.'
-    
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.join_date < (timezone.now() - timedelta(days=7)))
 
-
-class GenericAPIException(APIException):
-    def __init__(self, status_code=None, detail=None, code=None):
-        self.status_code=status_code
-        super().__init__(detail=detail, code=code)
-
-class IsAdminOrIsAuthenticatedReadOnly(permissions.BasePermission):
-    """
-    admin 사용자는 모두 가능, 로그인 사용자는 조회만 가능
-    """
-    SAFE_METHODS = ('GET', )
-    message = '접근 권한이 없습니다.'
-
-    def has_permission(self, request, view):
-        user = request.user
-
-        if not user.is_authenticated:
-            response ={
-                    "detail": "서비스를 이용하기 위해 로그인 해주세요.",
-                }
-            raise GenericAPIException(status_code=status.HTTP_401_UNAUTHORIZED, detail=response)
-
-        if user.is_authenticated and user.is_admin:
-            return True
-            
-        elif user.is_authenticated and request.method in self.SAFE_METHODS:
-            return True
-        
-        return False
 class UserView(APIView): # CBV 방식
     # permission_classes = [MyGoodPermission]
     permission_classes = [permissions.AllowAny] # 누구나 view 조회 가능
@@ -130,7 +106,7 @@ class UserView(APIView): # CBV 방식
     # permission_classes = [permissions.IsAuthenticated] # 로그인 된 사용자만 view 조회 가능
 
     
-    def get_same_hobby(self, request):
+    def get(self, request): # 같은 취미의 유저를 구하는 로직
         user = request.user
         # user = User.objects.get(id=1)
         print(user)
@@ -176,7 +152,7 @@ hobby : 여행 / hobby members : ['user2']
 
 
 class ListUsers(APIView): # 유저리스트에 대한 API
-
+    authentication_classes = [authentication.TokenAuthentication] # rest_framework에 토큰인증이 있어서 넣어봄.
     permission_classes = [permissions.AllowAny]
 
     # def get(self, request):  # 리소스 조회, 세부 정보 열람
