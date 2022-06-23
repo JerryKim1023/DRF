@@ -1,6 +1,6 @@
 from django.db import models
 
-from user.models import User
+from user.models import User as UserModel
 
 # Create your models here.
 
@@ -19,7 +19,7 @@ class Article(models.Model):
     class Meta:
         db_table = "article"
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     category = models.ManyToManyField(to="Category", verbose_name="카테고리")
     content = models.TextField(blank=True, null=True)
@@ -38,7 +38,7 @@ class Comment(models.Model):
         return f"{self.user} : {self.content}"
 
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     content = models.TextField()

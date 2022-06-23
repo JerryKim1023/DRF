@@ -16,8 +16,8 @@ from user.serializers import UserSerializer
 
 
 class ArticleApiView(APIView):
-    #모든 사용자에 대해서 user 정보와 userpofile 정보를 가져오고
-    # 같은 취미를 가진 사람들을 출력하기
+    #해당 user의 정보를 가져옴 (나중에 user 변수를 가져다 쓰면 됨.)
+    #유저의 글 정보를 가져옴.
     permission_classes = [permissions.AllowAny]
     def get(self, request):
         user = request.user
